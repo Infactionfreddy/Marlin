@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2023 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -19,30 +19,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#include "../../inc/MarlinConfigPre.h"
+/**
+ * Kodama Bardo V1.x as found in the Kodama Trinus (MEGA2560) board pin assignments
+ *
+ * Ported from https://github.com/sambuls/MarlinOnTrinus
+ * Board photo https://imgur.com/a/JbQH5SI
+ */
 
-#if HAS_GAME_MENU
+#define BOARD_NAME "Kodama Bardo V1.x"
+#define DEFAULT_MACHINE_NAME "Kodama Trinus"
 
-#include "menu_item.h"
-#include "game/game.h"
-
-void menu_game() {
-  START_MENU();
-  BACK_ITEM(TERN(LCD_INFO_MENU, MSG_INFO_MENU, MSG_MAIN_MENU));
-  #if ENABLED(MARLIN_BRICKOUT)
-    SUBMENU(MSG_BRICKOUT, brickout.enter_game);
-  #endif
-  #if ENABLED(MARLIN_INVADERS)
-    SUBMENU(MSG_INVADERS, invaders.enter_game);
-  #endif
-  #if ENABLED(MARLIN_SNAKE)
-    SUBMENU(MSG_SNAKE, snake.enter_game);
-  #endif
-  #if ENABLED(MARLIN_MAZE)
-    SUBMENU(MSG_MAZE, maze.enter_game);
-  #endif
-  END_MENU();
-}
-
-#endif // HAS_GAME_MENU
+#include "pins_PANOWIN_CUTLASS.h"
