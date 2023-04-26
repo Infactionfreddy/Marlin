@@ -27,7 +27,7 @@
 
 #include "../inc/MarlinConfig.h"
 //#include "MarlinSerial.h"
-ModbusMaster Modbus;
+ModbusMaster ModbusSerial;
 
 class modbus
 {
@@ -38,5 +38,6 @@ public:
   modbus();
   void master(uint16_t modbus_id);
   void slave(uint16_t modbus_id);
+  void transmission();
 };
 
