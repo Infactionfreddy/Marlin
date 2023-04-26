@@ -21,17 +21,22 @@
  */
 #pragma once
 
-#include "ModbusSerial.h"
+//#include "ModbusSerial.h" //slave
+#include "ModbusMaster.h"
+//Master
+
 #include "../inc/MarlinConfig.h"
 //#include "MarlinSerial.h"
+ModbusMaster Modbus;
 
 class modbus
 {
 private:
   /* data */
-uint16_t id;
+uint8_t id;
 public:
   modbus();
   void master(uint16_t modbus_id);
   void slave(uint16_t modbus_id);
 };
+
