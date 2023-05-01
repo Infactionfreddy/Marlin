@@ -27,8 +27,9 @@
 #if HAS_RS485_SERIAL
 
 
-void rs485init(){
+void rs485_init(){
   //SERIAL_ECHOLNPGM("M485 WORK !!");
+  
 }
 
 #ifdef HAS_FLOWCONTROLL
@@ -53,11 +54,11 @@ void postTransmission()
 
 }
 #endif
-/*
+
 rs485_serial::rs485_serial()
 {
 
-}
+};
 int rs485_serial::init(){
     //RS485_SERIAL.begin(57600);
     //RS485SERIAL.begin(RS485_ID,RS485_SERIAL);
@@ -66,13 +67,12 @@ int rs485_serial::init(){
     #if HAS_FLOWCONTROLL
     RS485SERIAL.preTransmission(preTransmission);
     RS485SERIAL.postTransmission(postTransmission);
-
     #endif
     //SERIAL_ECHOLNPGM("M485 WORK !!");
 
-}
+};
 
-*/
+
 
 
 #endif

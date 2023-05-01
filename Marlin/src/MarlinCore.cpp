@@ -1665,8 +1665,7 @@ void setup() {
   #endif
 
   #if HAS_RS485_SERIAL
-    SETUP_RUN(rs485init() //fix_problem
-    );  //FIX_PROBLEM
+    SETUP_RUN(rs485_init());  //FIX_PROBLEM
   #endif
 
   marlin_state = MF_RUNNING;

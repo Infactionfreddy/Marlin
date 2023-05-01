@@ -24,10 +24,13 @@
 #include "../inc/MarlinConfigPre.h"
 #ifndef rs485_base_serial_H
 #define rs485_base_serial_H
-//#include "ModbusMaster.h"
+//#include <ModbusMaster.h>
+
 //#include "rs485.h"
 
 //ModbusMaster RS485SERIAL;
+
+#define RS485_SEND_BUFFER_SIZE 32
 
 #define RS485_ID RS485_ADRESS
 #ifdef FLOWCONTROLL
@@ -37,8 +40,8 @@
   #endif
 #endif
 
-void rs485init();
-/*
+void rs485_init();
+
 class rs485_serial
 {
 private:
@@ -50,6 +53,6 @@ public:
   //~rs485_serial();
 };
 
-extern rs485_serial RS485;
-*/
+//extern rs485_serial RS485;
+
 #endif
