@@ -262,7 +262,7 @@
 #endif
 
 #if HAS_RS485_SERIAL
-  #include "feature/modbus/rs485_base_serial.h"
+  #include "feature/rs485_base_serial.h"
 #endif
 
 
@@ -1665,9 +1665,8 @@ void setup() {
   #endif
 
   #if HAS_RS485_SERIAL
-    SETUP_RUN(//rs485_init()
-    //FIX_PROBLEM
-    );
+    SETUP_RUN(rs485init() //fix_problem
+    );  //FIX_PROBLEM
   #endif
 
   marlin_state = MF_RUNNING;

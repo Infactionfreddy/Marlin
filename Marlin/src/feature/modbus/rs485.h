@@ -30,7 +30,7 @@
 //#include <rs485/protocols/photon.h>
 //#include <rs485/packetizer.h>
 
-#define RS485_SEND_BUFFER_SIZE 32
+//#define RS485_SEND_BUFFER_SIZE 32
 
 
 /*
