@@ -892,7 +892,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
 
       #if HAS_RS485_SERIAL
-        case 485: M485(); break;                                  // M485: Send RS485 packets
+        case 485: /*M485();*/ /*FIX_PROBLEM*/ break;                                  // M485: Send RS485 packets
       #endif
 
       #if ENABLED(CANCEL_OBJECTS)

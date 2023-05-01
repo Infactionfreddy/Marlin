@@ -28,9 +28,9 @@
 
 
 
-void rs485_init() { //RS485_SERIAL.begin(57600);
-
+/*void rs485_init(){ //RS485_SERIAL.begin(57600);
+    SERIAL_ECHOLNPGM("M485 WORK !!");
 }
-
+*/
 #endif
 

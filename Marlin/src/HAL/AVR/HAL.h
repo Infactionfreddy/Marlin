@@ -143,6 +143,14 @@ typedef Servo hal_servo_t;
     #define SERIAL_GET_TX_BUFFER_FREE() LCD_SERIAL.get_tx_buffer_free()
   #endif
 #endif
+#ifdef RS485_SERIAL_PORT
+  #if WITHIN(RS485_SERIAL_PORT, 1, 3)
+    #define RS485_SERIAL MYSERIAL(RS485_SERIAL_PORT)
+  #else
+    #error "RS485_SERIAL_PORT must be from 1 to 6, or -1 for Native USB."
+  #endif
+#endif
+
 
 //
 // ADC

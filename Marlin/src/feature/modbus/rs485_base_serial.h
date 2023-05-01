@@ -23,9 +23,19 @@
 
 #include "../../inc/MarlinConfigPre.h"
 #include "ModbusMaster.h"
-#include "rs485.h"
+//#include "rs485.h"
+
+ModbusMaster RS485SERIAL;
 
 #define RS485_ID RS485_ADRESS
+#ifdef FLOWCONTROLL
+  #define HAS_FLOWCONTROLL 1
+  #ifdef SINGLE_PIN
+  #define HAS_SINGLE_PIN 1
+  #endif
+#endif
+
+
 
 class rs485_serial
 {
@@ -33,7 +43,11 @@ private:
   /* data */
 public:
   rs485_serial(/* args */);
+
+  int init();
   //~rs485_serial();
 };
 
+extern rs485_serial RS485;
 
+void rs485_init();

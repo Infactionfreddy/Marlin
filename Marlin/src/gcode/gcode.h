@@ -1033,9 +1033,9 @@ private:
   #if HAS_POWER_MONITOR
     static void M430();
   #endif
-  
+
   #if HAS_RS485_SERIAL
-    static void M485();
+    static void M485(); //FIX_PROBLEM
   #endif
 
   #if ENABLED(CANCEL_OBJECTS)

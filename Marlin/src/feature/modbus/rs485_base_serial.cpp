@@ -22,14 +22,56 @@
 
 #include "../../inc/MarlinConfigPre.h"
 #include "rs485_base_serial.h"
+//#include "HAL.h"
+
+
+
+#ifdef HAS_FLOWCONTROLL
+void preTransmission()
+{
+  #ifdef HAS_SINGLE_PIN
+  digitalWrite(FLOW_PIN,1);
+  #else
+  digitalWrite(RE_NEG_PIN, 1);
+  digitalWrite(DE_PIN, 1);
+  #endif
+}
+
+void postTransmission()
+{
+  #ifdef HAS_SINGLE_PIN
+  digitalWrite(FLOW_PIN,0);
+  #else
+  digitalWrite(RE_NEG_PIN, 0);
+  digitalWrite(DE_PIN, 0);
+  #endif
+
+}
+#endif
 
 rs485_serial::rs485_serial(/* args */)
 {
-}
 
+}
+int rs485_serial::init(){
+    RS485_SERIAL.begin(57600);
+    RS485SERIAL.begin(RS485_ID,RS485_SERIAL);
+
+
+    #if HAS_FLOWCONTROLL
+    RS485SERIAL.preTransmission(preTransmission);
+    RS485SERIAL.postTransmission(postTransmission);
+
+    #endif
+    //SERIAL_ECHOLNPGM("M485 WORK !!");
+
+}
 
 /*
 rs485_serial::~rs485_serial()
 {
 }
 */
+void rs485_init(){
+  //SERIAL_ECHOLNPGM("M485 WORK !!");
+}

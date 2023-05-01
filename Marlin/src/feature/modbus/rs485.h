@@ -33,5 +33,6 @@
 #define RS485_SEND_BUFFER_SIZE 32
 
 
-
+/*
 void rs485_init();
+*/

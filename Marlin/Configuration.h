@@ -118,11 +118,23 @@
  * Select a serial port to communicate with RS485 protocol
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-//#define RS485_SERIAL_PORT 3
-//#define RS485_SOFT_SERIAL
+#define RS485_SERIAL_PORT 2 //exprimantal
+//#define RS485_SOFT_SERIAL //work in progress
 #ifdef RS485_SERIAL_PORT
+  #define RS485_BAURATE 57600
   #define RS485_ADRESS 0x02
   #define RS485_MASTER
+  //#define FLOWCONTROLL
+
+  #ifdef FLOWCONTROLL
+    #define SINGLE_PIN
+    #ifdef SINGLE_PIN
+    #define FLOW_PIN PA1
+    #else
+    #define RE_NEG_PIN PA1
+    #define DE_PIN PA2
+    #endif
+  #endif
   //#define RS485_BUS_BUFFER_SIZE 128
 #endif
 
