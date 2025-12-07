@@ -33,6 +33,10 @@
   #include "../feature/bltouch.h"
 #endif
 
+#if ANY(BD_SENSOR, HAS_DELTA_SENSORLESS_PROBING)
+  #include "endstops.h"
+#endif
+
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
@@ -45,10 +49,23 @@
   };
 #endif
 
-#if USES_Z_MIN_PROBE_PIN
-  #define PROBE_TRIGGERED() (READ(Z_MIN_PROBE_PIN) == Z_MIN_PROBE_ENDSTOP_HIT_STATE)
+#if HAS_DELTA_SENSORLESS_PROBING
+  #define PROBE_READ() (endstops.trigger_state() & (_BV(X_MAX) | _BV(Y_MAX) | _BV(Z_MAX)))
+  #define PROBE_TRIGGERED() (PROBE_READ() != 0)
 #else
-  #define PROBE_TRIGGERED() (READ(Z_MIN_PIN) == Z_MIN_ENDSTOP_HIT_STATE)
+  #if ENABLED(BD_SENSOR)
+    #define PROBE_READ() endstops.bdp_state
+  #elif USE_Z_MIN_PROBE
+    #define PROBE_READ() READ(Z_MIN_PROBE_PIN)
+  #else
+    #define PROBE_READ() READ(Z_MIN_PIN)
+  #endif
+  #if USE_Z_MIN_PROBE
+    #define PROBE_HIT_STATE Z_MIN_PROBE_ENDSTOP_HIT_STATE
+  #else
+    #define PROBE_HIT_STATE Z_MIN_ENDSTOP_HIT_STATE
+  #endif
+  #define PROBE_TRIGGERED() (PROBE_READ() == PROBE_HIT_STATE)
 #endif
 
 // In BLTOUCH HS mode, the probe travels in a deployed state.
@@ -79,7 +96,7 @@ public:
 
     static xyz_pos_t offset;
 
-    #if EITHER(PREHEAT_BEFORE_PROBING, PREHEAT_BEFORE_LEVELING)
+    #if ANY(PREHEAT_BEFORE_PROBING, PREHEAT_BEFORE_LEVELING)
       static void preheat_for_probing(const celsius_t hotend_temp, const celsius_t bed_temp, const bool early=false);
     #endif
 
@@ -92,7 +109,7 @@ public:
       #if HAS_PROBE_XY_OFFSET
         // Return true if the both nozzle and the probe can reach the given point.
         // Note: This won't work on SCARA since the probe offset rotates with the arm.
-        static bool can_reach(const_float_t rx, const_float_t ry, const bool probe_relative=true) {
+        static bool can_reach(const float rx, const float ry, const bool probe_relative=true) {
           if (probe_relative) {
             return position_is_reachable(rx - offset_xy.x, ry - offset_xy.y) // The nozzle can go where it needs to go?
                 && position_is_reachable(rx, ry, PROBING_MARGIN);            // Can the probe also go near there?
@@ -103,7 +120,7 @@ public:
           }
         }
       #else
-        static bool can_reach(const_float_t rx, const_float_t ry, const bool=true) {
+        static bool can_reach(const float rx, const float ry, const bool=true) {
           return position_is_reachable(rx, ry)
               && position_is_reachable(rx, ry, PROBING_MARGIN);
         }
@@ -111,7 +128,7 @@ public:
 
     #else // !IS_KINEMATIC
 
-      static bool obstacle_check(const_float_t rx, const_float_t ry) {
+      static bool obstacle_check(const float rx, const float ry) {
         #if ENABLED(AVOID_OBSTACLES)
           #ifdef OBSTACLE1
             constexpr float obst1[] = OBSTACLE1;
@@ -142,9 +159,9 @@ public:
        * can reach the position required to put the probe at the given position.
        *
        * Example: For a probe offset of -10,+10, then for the probe to reach 0,0 the
-       *          nozzle must be be able to reach +10,-10.
+       *          nozzle must be able to reach +10,-10.
        */
-      static bool can_reach(const_float_t rx, const_float_t ry, const bool probe_relative=true) {
+      static bool can_reach(const float rx, const float ry, const bool probe_relative=true) {
         if (probe_relative) {
           return position_is_reachable(rx - offset_xy.x, ry - offset_xy.y)
               && COORDINATE_OKAY(rx, min_x() - fslop, max_x() + fslop)
@@ -163,17 +180,29 @@ public:
 
     #endif // !IS_KINEMATIC
 
-    static float probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRaise raise_after=PROBE_PT_NONE,
-      const uint8_t verbose_level=0, const bool probe_relative=true, const bool sanity_check=true,
-      const_float_t z_min_point=Z_PROBE_LOW_POINT, const_float_t z_clearance=Z_TWEEN_SAFE_CLEARANCE,
-      const bool raise_after_is_relative=false);
+    static float probe_at_point(
+      const float        rx,
+      const float        ry,
+      const ProbePtRaise raise_after        = PROBE_PT_NONE,
+      const uint8_t      verbose_level      = 0,
+      const bool         probe_relative     = true,
+      const bool         sanity_check       = true,
+      const float        z_min_point        = Z_PROBE_LOW_POINT,
+      const float        z_clearance        = Z_TWEEN_SAFE_CLEARANCE,
+      const bool         raise_after_is_rel = false
+    );
 
-    static float probe_at_point(const xy_pos_t &pos, const ProbePtRaise raise_after=PROBE_PT_NONE,
-      const uint8_t verbose_level=0, const bool probe_relative=true, const bool sanity_check=true,
-      const_float_t z_min_point=Z_PROBE_LOW_POINT, float z_clearance=Z_TWEEN_SAFE_CLEARANCE,
-      const bool raise_after_is_relative=false
+    static float probe_at_point(
+      const xy_pos_t     &pos,
+      const ProbePtRaise raise_after        = PROBE_PT_NONE,
+      const uint8_t      verbose_level      = 0,
+      const bool         probe_relative     = true,
+      const bool         sanity_check       = true,
+      const float        z_min_point        = Z_PROBE_LOW_POINT,
+      const float        z_clearance        = Z_TWEEN_SAFE_CLEARANCE,
+      const bool         raise_after_is_rel = false
     ) {
-      return probe_at_point(pos.x, pos.y, raise_after, verbose_level, probe_relative, sanity_check, z_min_point, z_clearance, raise_after_is_relative);
+      return probe_at_point(pos.x, pos.y, raise_after, verbose_level, probe_relative, sanity_check, z_min_point, z_clearance, raise_after_is_rel);
     }
 
   #else // !HAS_BED_PROBE
@@ -182,7 +211,7 @@ public:
 
     static bool set_deployed(const bool, const bool=false) { return false; }
 
-    static bool can_reach(const_float_t rx, const_float_t ry, const bool=true) { return position_is_reachable(rx, ry); }
+    static bool can_reach(const float rx, const float ry, const bool=true) { return position_is_reachable(XY_LIST(rx, ry)); }
 
   #endif // !HAS_BED_PROBE
 
@@ -326,7 +355,7 @@ public:
   #endif
 
   #if HAS_QUIET_PROBING
-    static void set_probing_paused(const bool p);
+    static void set_devices_paused_for_probing(const bool p);
   #endif
 
   #if ENABLED(PROBE_TARE)
@@ -336,13 +365,15 @@ public:
 
   // Basic functions for Sensorless Homing and Probing
   #if HAS_DELTA_SENSORLESS_PROBING
-    static void set_offset_sensorless_adj(const_float_t sz);
+    static void set_offset_sensorless_adj(const float sz);
     static void refresh_largest_sensorless_adj();
   #endif
 
 private:
-  static bool probe_down_to_z(const_float_t z, const_feedRate_t fr_mm_s);
-  static float run_z_probe(const bool sanity_check=true, const_float_t z_min_point=Z_PROBE_LOW_POINT, const_float_t z_clearance=Z_TWEEN_SAFE_CLEARANCE);
+  #if HAS_BED_PROBE
+    static bool probe_down_to_z(const float z, const feedRate_t fr_mm_s);
+    static float run_z_probe(const bool sanity_check=true, const float z_min_point=Z_PROBE_LOW_POINT, const float z_clearance=Z_TWEEN_SAFE_CLEARANCE);
+  #endif
 };
 
 extern Probe probe;

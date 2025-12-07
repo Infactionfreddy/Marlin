@@ -55,6 +55,13 @@
 #define Z_MAX_PIN                           PB1
 
 //
+// Probe enable
+//
+#if ENABLED(PROBE_ENABLE_DISABLE) && !defined(PROBE_ENABLE_PIN)
+  #define PROBE_ENABLE_PIN            SERVO0_PIN
+#endif
+
+//
 // Steppers
 //
 #define X_STEP_PIN                          PC0
@@ -122,7 +129,7 @@
       #define TFTGLCD_CS                    PB11
     #endif
 
-  #else                                           // !MKS_MINI_12864
+  #else // !MKS_MINI_12864
 
     #define LCD_PINS_D4                     PA6
     #if IS_ULTIPANEL
@@ -152,7 +159,7 @@
 //
 // SPI
 //
-#define SPI_DEVICE                             2
+#define SPI_DEVICE                             2  // Maple
 #define SD_SCK_PIN                          PB13
 #define SD_MISO_PIN                         PB14
 #define SD_MOSI_PIN                         PB15
